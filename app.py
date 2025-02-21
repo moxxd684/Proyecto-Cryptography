@@ -6,7 +6,7 @@ import os
 from cryptography.fernet import Fernet
 
 # Definimos el título
-st.title("Cifrado Cryptography - Codificación y Decodificación")
+st.title("Cifrado Moaad Cryptography - Codificación y Decodificación")
 
 # Si no existe la variable texto_cifrado, la creamos vacía
 if "texto_cifrado" not in st.session_state:
