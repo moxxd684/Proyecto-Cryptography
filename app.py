@@ -1,61 +1,61 @@
-# Import necessary libraries
+# Importamos las librerías necesarias
 import streamlit as st
 import os
 
-# Import required functions from the cryptography library
-from cryptography.fernet import Fernet, InvalidToken
+# Importamos la función Fernet de cryptography
+from cryptography.fernet import Fernet
 
-# Define the title
-st.title("Moaad Cryptography - Encoding and Decoding")
+# Definimos el título
+st.title("Cifrado Cryptography - Codificación y Decodificación")
 
-# If the variable texto_cifrado does not exist, create it with a null value
-if "st.session_state.texto_cifrado" not in st.session_state:
-    st.session_state.texto_cifrado = ""  # Initialize a variable to store the encrypted text
+# Si no existe la variable texto_cifrado, la creamos vacía
+if "texto_cifrado" not in st.session_state:
+    st.session_state.texto_cifrado = ""  # Inicializamos una variable para guardar el texto cifrado
 
-# If the variable clave does not exist, generate a key within that variable using Fernet
-if "st.session_state.clave" not in st.session_state:
+# Si no existe la variable clave, generamos una clave usando Fernet
+if "clave" not in st.session_state:
     st.session_state.clave = Fernet.generate_key()
 
-# Store the uploaded file in the variable archivo
-archivo = st.file_uploader("Upload a TXT file", type=["txt"], key="file_uploader_2")
+# Guardamos en la variable archivo el archivo que se subirá
+archivo = st.file_uploader("Sube un archivo TXT", type=["txt"], key="file_uploader_2")
 
-# If the file is present, display the following
+# Si el archivo está presente, mostramos el siguiente contenido
 if archivo:
-    texto = archivo.read().decode("utf-8")  # Read the content of the file and decode it in UTF-8 format
-    st.text_area("File content:", texto, height=200)  # Display the content in a text area
-    st.session_state.texto_cifrado = texto  # Store the file text in the variable texto_cifrado
+    texto = archivo.read().decode("utf-8")  # Leemos el contenido del archivo y lo decodificamos en formato UTF-8
+    st.text_area("Contenido del archivo:", texto, height=200)  # Mostramos el contenido en un área de texto
+    st.session_state.texto_cifrado = texto  # Guardamos el texto del archivo en la variable texto_cifrado
 
-# Create the encrypt button
-    if st.button("Encrypt"):
-        st.session_state.cipher = Fernet(st.session_state.clave)  # Store the key in the variable cipher
-        st.session_state.cifrado = st.session_state.cipher.encrypt(texto.encode())  # Encrypt the text using the key and texto.encode()
+    # Creamos el botón cifrar
+    if st.button("Cifrar"):
+        st.session_state.cipher = Fernet(st.session_state.clave)  # Guardamos la clave en la variable cipher
+        st.session_state.cifrado = st.session_state.cipher.encrypt(texto.encode())  # Ciframos el texto usando la clave y texto.encode()
 
-# If the folder archivos does not exist, create it to store the files with the encrypted and decrypted text
+        # Si la carpeta archivos no existe, la creamos para almacenar los archivos con el texto cifrado y descifrado
         if not os.path.exists("archivos"):
             os.makedirs("archivos")
 
         with open("archivos/cifrado.txt", "wb") as f:
             f.write(st.session_state.cifrado)
-        st.markdown(f"**Encrypted text:** `{st.session_state.cifrado}`")
+        st.markdown(f"**Aquí texto cifrado:** `{st.session_state.cifrado}`")
 
-# Create the decrypt button
-    if st.button("Decrypt"):
-        if st.session_state.texto_cifrado:  # If the variable texto_cifrado exists, execute the following
-            st.session_state.cipher_dec = Fernet(st.session_state.clave)  # Store the decryption key in the variable cipher_dec
+    # Creamos el botón descifrar
+    if st.button("Descifrar"):
+        if st.session_state.texto_cifrado:  # Si existe la variable texto_cifrado, se ejecuta lo siguiente
+            st.session_state.cipher_dec = Fernet(st.session_state.clave)  # Guardamos la clave de descifrado en la variable cipher_dec
 
-# If the above was successful, then try the following
+            # Si lo anterior se ha podido hacer, entonces se intenta lo que está dentro de try
             try:
-                st.session_state.texto_descifrado = st.session_state.cipher_dec.decrypt(st.session_state.cifrado).decode()  # Store the decrypted text in the variable texto_descifrado using the cipher_dec variable with the encryption algorithm
+                st.session_state.texto_descifrado = st.session_state.cipher_dec.decrypt(st.session_state.cifrado).decode()  # Guardamos el texto descifrado en la variable texto_descifrado usando la variable cipher_dec con el algoritmo de cifrado
 
-# Create the file descifrado.txt and store the decrypted text
+                # Creamos el archivo descifrado.txt y almacenamos el texto descifrado
                 with open("archivos/descifrado.txt", "w", encoding="utf-8") as f:
                     f.write(st.session_state.texto_descifrado)
-                st.markdown(f"**Decrypted text:** `{st.session_state.texto_descifrado}`")
+                st.markdown(f"**Texto descifrado:** `{st.session_state.texto_descifrado}`")
 
-# If the try block was not successful, indicate the specified error
-            except (InvalidToken, TypeError) as e:  # type: ignore
-                st.error(f"Error: The encrypted text is not valid or the key is incorrect. Details: {e}")
+            # Si el try no se ha podido realizar correctamente, se indica el error especificado
+            except:
+                st.error("Error: El texto cifrado no es válido o la clave es incorrecta")
 
-# If the variable texto_cifrado did not exist, show the following error
+        # Si no existía la variable texto_cifrado, muestra el siguiente error
         else:
-            st.warning("There is no valid encrypted text to decrypt. Encrypt a text first")
+            st.warning("No hay un texto cifrado válido para descifrar. Cifra un texto primero")
